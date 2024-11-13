@@ -1,8 +1,16 @@
 from flask import Flask, request, render_template
-from apriori_2882543 import apriori, load_transactions
+from apriori_2882543 import apriori
+import csv
 import os
 
 app = Flask(__name__)
+
+def load_transactions(file):
+    # Open the uploaded file in text mode
+    file.stream.seek(0)  # Ensure we're at the start of the file
+    reader = csv.reader(file.stream.read().decode('utf-8').splitlines())  # Decode bytes to string
+    transactions = [row for row in reader]
+    return transactions
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
