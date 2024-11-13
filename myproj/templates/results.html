@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Apriori Results</title>
+</head>
+<body>
+    <h1>Apriori Algorithm Results</h1>
+    <p>Minimum Support: {{ support }}</p>
+    <h2>Frequent Itemsets:</h2>
+    <ul>
+        {% for itemset in results %}
+        <li>{{ itemset }}</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Run Again</a>
+</body>
+</html>
