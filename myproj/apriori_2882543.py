@@ -1,6 +1,7 @@
 import csv
 from itertools import combinations, chain
 from collections import defaultdict
+import time
 
 def find_frequent_1_itemsets(exchanges, min_support):
     """Find frequent 1-itemsets"""
@@ -54,4 +55,32 @@ def load_transactions(file):
     for row in reader:
         exchanges.append(set(map(int, row)))
     return exchanges
+
+def run_apriori(file, min_support):
+    """Run the Apriori algorithm and format the output"""
+    exchanges = load_transactions(file)
+    
+    # Start timing the execution
+    start_time = time.time()
+    results = apriori(exchanges, min_support)
+    end_time = time.time()
+    
+    # Formatting the output to match your specified format
+    formatted_results = "{{" + "}{".join([",".join(map(str, itemset)) for itemset in results]) + "}}"
+    
+    output = []
+    output.append(f"Input file: {file.name}")
+    output.append(f"Minimal support: {min_support}\n")
+    output.append(formatted_results)
+    output.append(f"\nEnd - total items: {len(results)}")
+    output.append(f"Total running time: {end_time - start_time:.6f} seconds")
+    
+    return "\n".join(output)
+
+if __name__ == "__main__":
+    # Example usage with a file
+    with open('1000-out1.csv', 'r') as file:
+        min_support = 20
+        print(run_apriori(file, min_support))
+
 
