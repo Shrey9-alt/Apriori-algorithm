@@ -56,6 +56,11 @@ def load_transactions(file):
         exchanges.append(set(map(int, row)))
     return exchanges
 
+def format_itemsets(itemsets):
+    """Format the frequent itemsets to match the required output style"""
+    formatted = "{{" + "}{".join([",".join(map(str, sorted(itemset))) for itemset in itemsets]) + "}}"
+    return formatted
+
 def run_apriori(file, min_support):
     """Run the Apriori algorithm and format the output"""
     exchanges = load_transactions(file)
@@ -65,20 +70,20 @@ def run_apriori(file, min_support):
     results = apriori(exchanges, min_support)
     end_time = time.time()
     
-    # Formatting the output to match your specified format
-    formatted_results = "{{" + "}{".join([",".join(map(str, itemset)) for itemset in results]) + "}}"
+    # Formatting the output
+    formatted_results = format_itemsets(results)
     
     output = []
-    output.append(f"Input file: {file.name}")
-    output.append(f"Minimal support: {min_support}\n")
+    output.append(f"Minimal Support: {min_support}")
+    output.append("\nFrequent Itemsets:\n")
     output.append(formatted_results)
-    output.append(f"\nEnd - total items: {len(results)}")
+    output.append(f"\n\nEnd - total items: {len(results)}")
     output.append(f"Total running time: {end_time - start_time:.6f} seconds")
     
     return "\n".join(output)
 
 if __name__ == "__main__":
-    # Example usage with a file
+    # Replace with file handling for web applications
     with open('1000-out1.csv', 'r') as file:
         min_support = 20
         print(run_apriori(file, min_support))
