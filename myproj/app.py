@@ -10,10 +10,13 @@ def index():
         file = request.files['file']
         min_support = int(request.form['min_support'])
 
-        if file:
-            transactions = load_transactions(file)
-            results, runtime = apriori(transactions, min_support)
-            return render_template('result.html', results=results, support=min_support, runtime=runtime)
+      if file:
+    # Load the transactions from the uploaded file
+    transactions = load_transactions(file)
+    # Run the Apriori algorithm
+    results, runtime = apriori(transactions, min_support)
+    return render_template('result.html', results=results, support=min_support, runtime=runtime)
+
     
     return render_template('index.html')
 
