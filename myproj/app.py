@@ -1,15 +1,15 @@
 from flask import Flask, request, render_template
-from apriori_2882543 import apriori
+from apriori import apriori
 import csv
 import os
 
 app = Flask(__name__)
 
+# Function to load transactions from the uploaded file
 def load_transactions(file):
-    # Open the uploaded file in text mode
     file.stream.seek(0)  # Ensure we're at the start of the file
     reader = csv.reader(file.stream.read().decode('utf-8').splitlines())  # Decode bytes to string
-    transactions = [row for row in reader]
+    transactions = [set(row) for row in reader]  # Convert each row to a set
     return transactions
 
 @app.route('/', methods=['GET', 'POST'])
@@ -22,13 +22,20 @@ def index():
         if file:
             # Load the transactions from the uploaded file
             transactions = load_transactions(file)
+            
             # Run the Apriori algorithm
-            results = apriori(transactions, min_support)
-            return render_template('result.html', results=results, support=min_support)
+            frequent_itemsets = apriori(transactions, min_support)
+            frequent_itemsets = sorted(frequent_itemsets, key=lambda x: (len(x), x))
+
+            # Render the results in the result.html template
+            return render_template(
+                'result.html',
+                results=[list(itemset) for itemset in frequent_itemsets],
+                support=min_support
+            )
     
     return render_template('index.html')
 
 if __name__ == '__main__':
     # Ensure compatibility with Render by using the environment variable for PORT
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)
-
