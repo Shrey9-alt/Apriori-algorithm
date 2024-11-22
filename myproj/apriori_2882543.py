@@ -3,13 +3,13 @@ import time
 from collections import defaultdict, Counter
 from itertools import combinations, chain
 
-def load_transactions(file_name):
-    """Load transactions from the given CSV file"""
+def load_transactions(uploaded_file):
+    """Load transactions from an uploaded CSV file"""
     transactions = []
-    with open(file_name, 'r') as file:
-        reader = csv.reader(file)
-        for row in reader:
-            transactions.append(set(row))
+    uploaded_file.stream.seek(0)  # Ensure we're at the start of the file
+    reader = csv.reader(uploaded_file.stream.read().decode('utf-8').splitlines())  # Decode and split lines
+    for row in reader:
+        transactions.append(set(row))
     return transactions
 
 def find_frequent_1_itemsets(transactions, min_support):
