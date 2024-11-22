@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Apriori Results</title>
+    <title>Data Mining Apriori Algorithm at Google App Engine</title>
 </head>
 <body>
-    <h1>Apriori Algorithm Results</h1>
-    <p>Minimum Support: {{ support }}</p>
-
-    <ul>
+    <h1>Data Mining Apriori Algorithm at Google App Engine</h1>
+    <p><strong>Input file:</strong> {{ file_name }}</p>
+    <p><strong>Minimal support:</strong> {{ support }}</p>
+    <p>{</p>
+    <p>
         {% for itemset in results %}
-        <li>{{ itemset }}</li>
+            {{ itemset }},
         {% endfor %}
-    </ul>
-    <a href="/">Run Again</a>
+    </p>
+    <p>}</p>
+    <p><strong>End - total items:</strong> {{ total_items }}</p>
 </body>
 </html>
