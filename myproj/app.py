@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template
-from apriori import apriori
+from apriori_2882543.py import apriori_2882543.py
 import csv
 import os
 
@@ -24,7 +24,7 @@ def index():
             transactions = load_transactions(file)
             
             # Run the Apriori algorithm
-            frequent_itemsets = apriori(transactions, min_support)
+            frequent_itemsets = apriori_2882543.py (transactions, min_support)
             frequent_itemsets = sorted(frequent_itemsets, key=lambda x: (len(x), x))
 
             # Render the results in the result.html template
