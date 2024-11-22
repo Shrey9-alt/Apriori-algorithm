@@ -1,91 +1,101 @@
+from flask import Flask, request, render_template, redirect
+import os
 import csv
-from itertools import combinations, chain
-from collections import defaultdict
-import time
+from collections import defaultdict, Counter
+from itertools import combinations
 
-def find_frequent_1_itemsets(exchanges, min_support):
-    """Find frequent 1-itemsets"""
-    item_count = defaultdict(int)
-    for transaction in exchanges:
+app = Flask(__name__)
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+def load_transactions(file_path):
+    transactions = []
+    with open(file_path, 'r') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            transactions.append(set(row))
+    return transactions
+
+
+def get_frequent_1_itemsets(transactions, min_support):
+    item_counts = Counter()
+    for transaction in transactions:
         for item in transaction:
-            item_count[frozenset([item])] += 1
-    return {itemset for itemset, count in item_count.items() if count >= min_support}
+            item_counts[frozenset([item])] += 1
+    return {itemset: count for itemset, count in item_counts.items() if count >= min_support}
 
-def apriori_gen(oftensets, k):
-    """Generate candidate itemsets"""
+
+def apriori_gen(itemsets, k):
     candidates = set()
-    itemsets = list(oftensets)
+    itemsets = list(itemsets)
     for i in range(len(itemsets)):
         for j in range(i + 1, len(itemsets)):
-            l1, l2 = list(itemsets[i]), list(itemsets[j])
-            if l1[:k - 2] == l2[:k - 2] and l1[k - 2] < l2[k - 2]:
-                candidate = frozenset(itemsets[i] | itemsets[j])
-                if not has_infrequent_subset(candidate, oftensets):
-                    candidates.add(candidate)
+            union_set = itemsets[i] | itemsets[j]
+            if len(union_set) == k and not has_infrequent_subset(union_set, itemsets):
+                candidates.add(union_set)
     return candidates
 
-def has_infrequent_subset(candidate, oftensets):
-    """Check if a candidate has any infrequent subset"""
+
+def has_infrequent_subset(candidate, frequent_itemsets):
     for subset in combinations(candidate, len(candidate) - 1):
-        if frozenset(subset) not in oftensets:
+        if frozenset(subset) not in frequent_itemsets:
             return True
     return False
 
-def apriori(exchanges, min_support):
-    """Apriori algorithm implementation"""
-    L = []
-    k = 1
-    Lk = find_frequent_1_itemsets(exchanges, min_support)
-    while Lk:
-        L.append(Lk)
-        Ck = apriori_gen(Lk, k + 1)
-        item_count = defaultdict(int)
-        for transaction in exchanges:
-            Ct = {candidate for candidate in Ck if candidate.issubset(transaction)}
-            for candidate in Ct:
-                item_count[candidate] += 1
-        Lk = {itemset for itemset, count in item_count.items() if count >= min_support}
+
+def filter_candidates(transactions, candidates, min_support):
+    item_counts = defaultdict(int)
+    for transaction in transactions:
+        for candidate in candidates:
+            if candidate.issubset(transaction):
+                item_counts[candidate] += 1
+    return {itemset: count for itemset, count in item_counts.items() if count >= min_support}
+
+
+def apriori(transactions, min_support):
+    frequent_itemsets = []
+    current_itemsets = get_frequent_1_itemsets(transactions, min_support)
+    k = 2
+    while current_itemsets:
+        frequent_itemsets.extend(current_itemsets.keys())
+        candidates = apriori_gen(current_itemsets.keys(), k)
+        current_itemsets = filter_candidates(transactions, candidates, min_support)
         k += 1
-    return set(chain.from_iterable(L))
-
-def load_transactions(file):
-    """Load transactions from uploaded CSV file"""
-    exchanges = []
-    reader = csv.reader(file)
-    for row in reader:
-        exchanges.append(set(map(int, row)))
-    return exchanges
-
-def format_itemsets(itemsets):
-    """Format the frequent itemsets to match the required output style"""
-    formatted = "{{" + "}{".join([",".join(map(str, sorted(itemset))) for itemset in itemsets]) + "}}"
-    return formatted
-
-def run_apriori(file, min_support):
-    """Run the Apriori algorithm and format the output"""
-    exchanges = load_transactions(file)
-    
-    # Start timing the execution
-    start_time = time.time()
-    results = apriori(exchanges, min_support)
-    end_time = time.time()
-    
-    # Formatting the output
-    formatted_results = format_itemsets(results)
-    
-    output = []
-    output.append(f"Minimal Support: {min_support}")
-    output.append("\nFrequent Itemsets:\n")
-    output.append(formatted_results)
-    output.append(f"\n\nEnd - total items: {len(results)}")
-    output.append(f"Total running time: {end_time - start_time:.6f} seconds")
-    
-    return "\n".join(output)
-
-if __name__ == "__main__":
-    # Replace with file handling for web applications
-    with open('1000-out1.csv', 'r') as file:
-        min_support = 20
-        print(run_apriori(file, min_support))
+    return [set(itemset) for itemset in frequent_itemsets]
 
 
+def get_maximal_frequent_itemsets(frequent_itemsets):
+    maximal = []
+    for itemset in sorted(frequent_itemsets, key=len, reverse=True):
+        if not any(set(itemset).issubset(set(max_itemset)) for max_itemset in maximal):
+            maximal.append(itemset)
+    return maximal
+
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        # Handle file upload
+        uploaded_file = request.files['file']
+        min_support = int(request.form['min_support'])
+        if uploaded_file:
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], uploaded_file.filename)
+            uploaded_file.save(file_path)
+            transactions = load_transactions(file_path)
+            frequent_itemsets = apriori(transactions, min_support)
+            maximal_frequent_itemsets = get_maximal_frequent_itemsets(frequent_itemsets)
+            formatted_itemsets = [f"{{{','.join(itemset)}}}" for itemset in maximal_frequent_itemsets]
+            return render_template(
+                'result.html',
+                file_name=uploaded_file.filename,
+                support=min_support,
+                results=formatted_itemsets,
+                total_items=len(maximal_frequent_itemsets),
+            )
+    return render_template('index.html')
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
