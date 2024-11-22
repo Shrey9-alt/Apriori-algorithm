@@ -41,21 +41,20 @@ def has_infrequent_subset(candidate, itemsets):
     return False
 
 def apriori(transactions, min_support):
-    """Apriori algorithm implementation"""
-    L = []
-    k = 1
-    Lk = find_frequent_1_itemsets(transactions, min_support)
-    while Lk:
-        L.append(Lk)
-        Ck = apriori_gen(Lk, k + 1)
-        item_count = defaultdict(int)
-        for transaction in transactions:
-            Ct = {candidate for candidate in Ck if candidate.issubset(transaction)}
-            for candidate in Ct:
-                item_count[candidate] += 1
-        Lk = {itemset for itemset, count in item_count.items() if count >= min_support}
+    """Apriori algorithm implementation with runtime measurement"""
+    start_time = time.time()  # Start timing
+
+    frequent_itemsets = []
+    current_itemsets = get_frequent_1_itemsets(transactions, min_support)
+    k = 2
+    while current_itemsets:
+        frequent_itemsets.extend(current_itemsets.keys())
+        candidates = apriori_gen(current_itemsets.keys(), k)
+        current_itemsets = filter_candidates(transactions, candidates, min_support)
         k += 1
-    return set(chain.from_iterable(L))
+
+    runtime = time.time() - start_time  # Calculate runtime
+    return [set(itemset) for itemset in frequent_itemsets], runtime
 
 def get_maximal_frequent_itemsets(frequent_itemsets):
     """Extract maximal frequent itemsets from all frequent itemsets"""
