@@ -10,11 +10,7 @@
     <p><strong>Minimal support:</strong> {{ support }}</p>
 
     <p>
-        { 
-        {% for itemset in results %}
-            { {{ itemset | join(',') }} }
-        {% endfor %}
-        }
+        {{ results | join(", ") }}
     </p>
 
     <p><strong>End - total items:</strong> {{ total_items }}</p>
