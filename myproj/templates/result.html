@@ -9,12 +9,7 @@
     <p><strong>Input file:</strong> {{ file_name }}</p>
     <p><strong>Minimal support:</strong> {{ support }}</p>
 
-    <h3>Frequent Itemsets:</h3>
-    <p>
-        {
-        {{ results | join(" ") }}
-        }
-    </p>
+     <p>{{ formatted_output }}</p>
 
     <p><strong>End - total items:</strong> {{ total_items }}</p>
     <p><strong>Total running time:</strong> {{ runtime | round(6) }} seconds</p>
