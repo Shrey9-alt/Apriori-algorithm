@@ -1,7 +1,6 @@
 import csv
 from collections import defaultdict, Counter
 from itertools import combinations
-import time
 
 # Function to load transactions from a CSV file
 def load_transactions(file_name):
@@ -63,6 +62,7 @@ def apriori(transactions, min_support):
 def get_maximal_frequent_itemsets(frequent_itemsets):
     maximal = []
     for itemset in sorted(frequent_itemsets, key=len, reverse=True):
+        # Check if the current itemset is a maximal itemset
         if not any(set(itemset).issubset(set(max_itemset)) for max_itemset in maximal):
             maximal.append(itemset)
     return maximal
