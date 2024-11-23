@@ -24,18 +24,13 @@ def index():
                 results = run_apriori(file_path, min_support)
                 end_time = time.time()  # End timer
 
-                # Format the maximal itemsets
-                formatted_results = [
-                    "{" + ",".join(map(str, itemset)) + "}" for itemset in results["maximal_itemsets"]
-                ]
-
                 # Calculate runtime
                 total_runtime = round(end_time - start_time, 4)
 
                 # Render result page
                 return render_template(
                     'result.html',
-                    results=formatted_results,  # Pass the formatted results
+                    results=results["maximal_itemsets"],
                     total_items=results["total_items"],
                     runtime=total_runtime,
                     file_name=file.filename,
@@ -45,7 +40,6 @@ def index():
                 return f"An error occurred: {str(e)}", 500
 
     return render_template('index.html')
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
