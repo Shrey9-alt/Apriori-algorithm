@@ -11,7 +11,9 @@
 
     <h3>Frequent Itemsets:</h3>
     <p>
-        {{ results | join(", ") }}
+        {
+        {{ results | join(" ") }}
+        }
     </p>
 
     <p><strong>End - total items:</strong> {{ total_items }}</p>
