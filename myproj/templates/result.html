@@ -9,13 +9,11 @@
     <p><strong>Input file:</strong> {{ file_name }}</p>
     <p><strong>Minimal support:</strong> {{ support }}</p>
 
-    <p>
-        { 
+    <ul>
         {% for itemset in results %}
-            { {{ itemset | join(',') }} }{% if not loop.last %}{% endif %}
+            <li>{{ itemset }}</li>
         {% endfor %}
-        }
-    </p>
+    </ul>
 
     <p><strong>End - total items:</strong> {{ total_items }}</p>
     <p><strong>Total running time:</strong> {{ runtime | round(4) }} seconds</p>
