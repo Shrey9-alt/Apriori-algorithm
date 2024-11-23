@@ -78,7 +78,7 @@ def run_apriori(file_name, min_support):
     maximal_frequent_itemsets.sort(key=lambda x: (len(x), x))
 
  # Format maximal itemsets for display
-    formatted_itemsets = [f"{{{','.join(map(str,itemset))}}}" for itemset in maximal_frequent_itemsets]
+    formatted_itemsets = [f"{{{','.join(map(lambda x: str(x).strip(), itemset))}}}" for itemset in maximal_frequent_itemsets]
 
     
     # Prepare the results in a dictionary
