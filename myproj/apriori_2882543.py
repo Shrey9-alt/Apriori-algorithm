@@ -77,15 +77,8 @@ def run_apriori(file_name, min_support):
     maximal_frequent_itemsets = get_maximal_frequent_itemsets(frequent_itemsets)
     maximal_frequent_itemsets.sort(key=lambda x: (len(x), x))
 
-def apriori_algorithm():
-    # Assuming maximal_frequent_itemsets is computed before this line
-    formatted_itemsets = ['{' + ','.join(map(str, itemset)) + '}' for itemset in maximal_frequent_itemsets]
-    
-    # Join the formatted itemsets into a single string without commas between sets
-    formatted_output = ''.join(formatted_itemsets)
-
-    # Now formatted_output should be the desired format
-    print(formatted_output)
+ # Format maximal itemsets for display
+    formatted_itemsets = [f"{{{','.join(map(str,itemset))}}}" for itemset in maximal_frequent_itemsets]
 
     
     # Prepare the results in a dictionary
