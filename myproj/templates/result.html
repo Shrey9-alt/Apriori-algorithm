@@ -5,15 +5,18 @@
 </head>
 <body>
     <h1>Data Mining Apriori Algorithm at Google App Engine</h1>
+
     <p><strong>Input file:</strong> {{ file_name }}</p>
     <p><strong>Minimal support:</strong> {{ support }}</p>
-    <p>{</p>
-    <p>
+
+    <h3>Frequent Itemsets:</h3>
+    <ul>
         {% for itemset in results %}
-            {{ itemset }},
+            <li>{{ itemset }}</li>
         {% endfor %}
-    </p>
-    <p>}</p>
+    </ul>
+
     <p><strong>End - total items:</strong> {{ total_items }}</p>
+    <p><strong>Total running time:</strong> {{ runtime | round(4) }} seconds</p>
 </body>
 </html>
