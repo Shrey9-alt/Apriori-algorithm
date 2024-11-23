@@ -8,10 +8,9 @@
 
     <p><strong>Input file:</strong> {{ file_name }}</p>
     <p><strong>Minimal support:</strong> {{ support }}</p>
-
-    <h3>Frequent Itemsets:</h3>
+    
     <p>
-        {{ results | join(", ") }}
+        { results | join(", ") }
     </p>
 
     <p><strong>End - total items:</strong> {{ total_items }}</p>
