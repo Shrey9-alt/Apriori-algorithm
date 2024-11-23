@@ -10,10 +10,15 @@
     <p><strong>Minimal support:</strong> {{ support }}</p>
 
     <p>
-        {{ results | join(", ") }}
+        { 
+        {% for itemset in results %}
+            { {{ itemset | join('') }} }{% if not loop.last %}{% endif %}
+        {% endfor %}
+        }
     </p>
 
     <p><strong>End - total items:</strong> {{ total_items }}</p>
     <p><strong>Total running time:</strong> {{ runtime | round(4) }} seconds</p>
 </body>
 </html>
+
