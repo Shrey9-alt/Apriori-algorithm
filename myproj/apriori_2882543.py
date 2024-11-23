@@ -1,10 +1,7 @@
 import csv
-import sys
-import time
 from collections import defaultdict, Counter
 from itertools import combinations
-import argparse
-
+import time
 
 # Function to load transactions from a CSV file
 def load_transactions(file_name):
@@ -15,7 +12,6 @@ def load_transactions(file_name):
             transactions.append(set(row))
     return transactions
 
-
 # Function to find frequent 1-itemsets
 def get_frequent_1_itemsets(transactions, min_support):
     item_counts = Counter()
@@ -23,7 +19,6 @@ def get_frequent_1_itemsets(transactions, min_support):
         for item in transaction:
             item_counts[frozenset([item])] += 1
     return {itemset: count for itemset, count in item_counts.items() if count >= min_support}
-
 
 # Function to generate candidate itemsets of size k
 def apriori_gen(itemsets, k):
@@ -36,14 +31,12 @@ def apriori_gen(itemsets, k):
                 candidates.add(union_set)
     return candidates
 
-
 # Function to check if a candidate has an infrequent subset
 def has_infrequent_subset(candidate, frequent_itemsets):
     for subset in combinations(candidate, len(candidate) - 1):
         if frozenset(subset) not in frequent_itemsets:
             return True
     return False
-
 
 # Function to filter candidate itemsets based on minimum support
 def filter_candidates(transactions, candidates, min_support):
@@ -53,7 +46,6 @@ def filter_candidates(transactions, candidates, min_support):
             if candidate.issubset(transaction):
                 item_counts[candidate] += 1
     return {itemset: count for itemset, count in item_counts.items() if count >= min_support}
-
 
 # Main Apriori algorithm implementation
 def apriori(transactions, min_support):
@@ -67,7 +59,6 @@ def apriori(transactions, min_support):
         k += 1
     return [set(itemset) for itemset in frequent_itemsets]
 
-
 # Function to find maximal frequent itemsets
 def get_maximal_frequent_itemsets(frequent_itemsets):
     maximal = []
@@ -76,26 +67,23 @@ def get_maximal_frequent_itemsets(frequent_itemsets):
             maximal.append(itemset)
     return maximal
 
+# Main function to run the algorithm and return results in a structured format
+def run_apriori(file_name, min_support):
+    # Load transactions
+    transactions = load_transactions(file_name)
 
-# Main execution block
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Apriori Algorithm Implementation')
-    parser.add_argument('-i', '--input', required=True, help='Input CSV file')
-    parser.add_argument('-m', '--min_support', type=int, required=True, help='Minimum support value')
-    args = parser.parse_args()
-
-    # Load transactions and run Apriori algorithm
-    transactions = load_transactions(args.input)
-    min_support = args.min_support
+    # Run the Apriori algorithm
     frequent_itemsets = apriori(transactions, min_support)
     maximal_frequent_itemsets = get_maximal_frequent_itemsets(frequent_itemsets)
     maximal_frequent_itemsets.sort(key=lambda x: (len(x), x))
 
-    # Print results
-    print(f"Input file: {args.input}")
-    print(f"Minimal support: {min_support}")
-    print("{", end="")
+    # Format maximal itemsets for display
     formatted_itemsets = [f"{{{','.join(map(str, itemset))}}}" for itemset in maximal_frequent_itemsets]
-    print(",".join(formatted_itemsets), end="")
-    print("}")
-    print(f"\nEnd - total items: {len(maximal_frequent_itemsets)}")
+    
+    # Prepare the results in a dictionary
+    results = {
+        "maximal_itemsets": formatted_itemsets,
+        "total_items": len(maximal_frequent_itemsets)
+    }
+    
+    return results
