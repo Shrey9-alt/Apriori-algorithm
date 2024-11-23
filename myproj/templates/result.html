@@ -6,22 +6,18 @@
 <body>
     <h1>Data Mining Apriori Algorithm at Google App Engine</h1>
 
-    <p><strong>Input file: {{ file_name }}</strong></p>
-    <p><strong>Minimal support: {{ support }}</strong></p>
+    <p><strong>Input file:</strong> {{ file_name }}</p>
+    <p><strong>Minimal support:</strong> {{ support }}</p>
 
-     <p>
-        {
+    <p>
+        { 
         {% for itemset in results %}
             { {{ itemset | join(',') }} }{% if not loop.last %}{% endif %}
         {% endfor %}
         }
     </p>
 
-    <p>End - total items: {{ total_items }}</p>
-    <p>Total running time: {{ runtime | round(4) }}</p>
+    <p><strong>End - total items:</strong> {{ total_items }}</p>
+    <p><strong>Total running time:</strong> {{ runtime | round(4) }} seconds</p>
 </body>
 </html>
-
-
-
-
