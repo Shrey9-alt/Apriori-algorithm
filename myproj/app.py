@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template
-from apriori import run_apriori
+from apriori_2882543 import run_apriori  # Correct import
 import os
 import time
 
@@ -14,6 +14,8 @@ def index():
         if file:
             try:
                 # Save the file temporarily
+                if not os.path.exists('uploads'):
+                    os.makedirs('uploads')
                 file_path = os.path.join('uploads', file.filename)
                 file.save(file_path)
 
