@@ -25,7 +25,7 @@ def index():
                 end_time = time.time()  # End timer
 
                 # Calculate runtime
-                total_runtime = round(end_time - start_time, 4)
+                total_runtime = round(end_time - start_time, 6)
 
                 # Render result page
                 return render_template(
