@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Data Mining Apriori Algorithm at Google App Engine</title>
+    <title>Data Mining Apriori Algorithm Results</title>
 </head>
 <body>
-    <h1>Data Mining Apriori Algorithm at Google App Engine</h1>
+    <h1>Data Mining Apriori Algorithm Results</h1>
 
     <p><strong>Input file:</strong> {{ file_name }}</p>
     <p><strong>Minimal support:</strong> {{ support }}</p>
 
   <p>{{'{' + results | join('') + '}'}}</p>
 
-
     <p><strong>End - total items:</strong> {{ total_items }}</p>
-    <p><strong>Total running time:</strong> {{ runtime | round(4) }} seconds</p>
+    <p><strong>Total running time:</strong> {{ runtime | round(6) }} seconds</p>
 </body>
 </html>
